@@ -79,11 +79,11 @@ class Game
         }
         $coord = $this->board->setMovementOnBoard($columna,$this->nextPlayer);
 
-        if ($this->board->checkWin($coord)){
+         if ($this->board->checkWin($coord)){
             $this->winner = $this->players[$this->nextPlayer];
             $this->scores[$this->nextPlayer]++;
         } else {
-            $this->nextPlayer = ($this->nextPlayer == 1) ? 2 : 1;
+             $this->nextPlayer = ($this->nextPlayer == 1) ? 2 : 1;
         }
         $this->save();
     }
@@ -136,6 +136,50 @@ class Game
 
     public static function restore(){
         return unserialize($_SESSION['game'],[Game::class]);
+    }
+
+    public function saveGame( $usuari_id)   {
+        // Serialitzar el board
+        $graella = serialize($this->board);
+        $db = unserialize($_SESSION['db'],[PDO::class]);
+
+        // Determinar l'estat de la partida
+        if ($this->winner !== null) {
+            $estat_partida = 'guanyada';
+        } else {
+            $estat_partida = 'en_curs';
+        }
+
+        // Inserir la nova partida
+        $query = "INSERT INTO partides (usuari_id, graella, torn_actual, estat_partida) 
+                  VALUES (:usuari_id, :graella, :torn_actual, :estat_partida) 
+                  ON DUPLICATE KEY UPDATE 
+                  graella = :graella, torn_actual = :torn_actual, estat_partida = :estat_partida";
+
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':usuari_id', $usuari_id);
+        $stmt->bindParam(':graella', $graella);
+        $stmt->bindParam(':torn_actual', $this->nextPlayer);
+        $stmt->bindParam(':estat_partida', $estat_partida);
+
+        return $stmt->execute();
+    }
+
+    // Recupera una partida des de la base de dades
+    public function getPartidaByUserId($usuari_id) {
+        $query = "SELECT * FROM partides WHERE usuari_id = :usuari_id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':usuari_id', $usuari_id);
+        $stmt->execute();
+        $partida = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if ($partida) {
+            $this->board  = unserialize($partida['graella'],Board::class);
+            $this->winner = null;
+            $this->nextPlayer = $partida['torn_actual'];
+        }
+
+        return $partida;
     }
 
 

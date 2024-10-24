@@ -19,6 +19,7 @@
     <?php include_once $_SERVER['DOCUMENT_ROOT'].'/../Views/partials/board.view.php'  ?>
      <input type="submit" name="reset" value="Reiniciar joc">
      <input type="submit" name="exit" value="Sortir">
+     <input type="submit" name="save" value="Guardar Partida">
 </form>
  <?php include_once $_SERVER['DOCUMENT_ROOT'].'/../Views/partials/panel.view.php'  ?>
 
