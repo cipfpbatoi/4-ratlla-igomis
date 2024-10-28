@@ -45,10 +45,10 @@ class GameController
             exit();
         }
         if (isset($request['save'])) {
-            $this->game->saveGame( );
+            $this->game->saveGame( $this->db );
         }
         if (isset($request['restore'])) {
-            $this->game = Game::restoreGame( );
+            $this->game = Game::restoreGame($this->db );
             $this->game->save();
         }
         if (! $this->game->getBoard()->isFull()) {

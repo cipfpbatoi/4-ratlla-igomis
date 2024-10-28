@@ -139,8 +139,8 @@ class Game
         return unserialize($_SESSION['game'],[Game::class]);
     }
 
-    public function saveGame( )   {
-        $db = Connect::restore()->getConnection();
+    public function saveGame($db )   {
+
         // Serialitzar el board
         $usuari_id = $_SESSION['user_id'];
         $game  = $_SESSION['game'];
@@ -160,8 +160,8 @@ class Game
     }
 
     // Recupera una partida des de la base de dades
-    public static function restoreGame ( ) {
-        $db = Connect::restore()->getConnection();
+    public static function restoreGame ($db ) {
+
         $usuari_id = $_SESSION['user_id'];
         $query = "SELECT * FROM partides WHERE usuari_id = :usuari_id";
         $stmt = $db->prepare($query);

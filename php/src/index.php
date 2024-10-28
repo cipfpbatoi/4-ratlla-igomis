@@ -12,9 +12,7 @@ use Joc4enRatlla\Services\Connect;
 $connection = new Connect($dbConfig);
 
 if (!isset($_SESSION['user_id'])) {
-
-
-    $user = new User();
+    $user = new User($connection->getConnection());
     $authController = new AuthController($user);
     $error = '';
     if ($_SERVER['REQUEST_METHOD'] === 'POST' ) {
@@ -32,7 +30,7 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' ) {
-    $gameController = new GameController($_POST);
+    $gameController = new GameController($_POST, $connection->getConnection());
  } else {
     loadView('jugador');
 }

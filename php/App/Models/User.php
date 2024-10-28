@@ -8,8 +8,8 @@ class User
 {
     private $db;
 
-    public function __construct( ) {
-        $this->db = Connect::restore()->getConnection();
+    public function __construct($db) {
+        $this->db = $db;
     }
 
     public function findUserByUsername($nom_usuari) {

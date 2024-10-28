@@ -21,7 +21,7 @@ class Connect
         }
 
         $this->connection = $db;
-        $this->save();
+         
     }
 
     public function getConnection(): \PDO
@@ -29,13 +29,7 @@ class Connect
         return $this->connection;
     }
 
-    public function save(){
-        $_SESSION['connection'] = serialize($this);
-    }
 
-    public static function restore(){
-        return unserialize($_SESSION['connection'],[Connect::class]);
-    }
 
 
 }
