@@ -93,18 +93,6 @@ class Player {
         return $this;
     }
 
-    /**
-     * Retorna una representació en forma de cadena de l'objecte Player
-     *
-     * @return string Representació de l'objecte Player
-     */
-    public function __toString() {
-        $playMode = $this->isAutomatic ? 'Automàtic' : 'Manual';
-        $ret =  "Nom: " . $this->name . "<br/>";
-        $ret .= "Color de les fitxes: " . $this->color . "<br/>";
-        $ret .= "Forma de jugar: " . $playMode . "<br/>";
-        return $ret;
-    }
 }
 
 
