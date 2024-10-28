@@ -12,7 +12,6 @@ class GameController
     private Game $game;
     public function __construct($request=null)
     {
-        $this->db = $db;
         if (!isset($_SESSION['game'])) {
             $jugador1 = new Player( $request['name'], $request['color']);
             $jugador2 = new Player( "Jugador 2", "pink", true);
