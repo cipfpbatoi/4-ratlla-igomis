@@ -10,8 +10,11 @@ use Joc4enRatlla\Exceptions\IllegalMoveException;
 class GameController
 {
     private Game $game;
-    public function __construct($request=null)
+
+    private $db;
+    public function __construct($request=null,$db=null)
     {
+        $this->db = $db;
         if (!isset($_SESSION['game'])) {
             $jugador1 = new Player( $request['name'], $request['color']);
             $jugador2 = new Player( "Jugador 2", "pink", true);
