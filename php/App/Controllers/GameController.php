@@ -10,6 +10,7 @@ use Joc4enRatlla\Exceptions\IllegalMoveException;
 class GameController
 {
     private Game $game;
+    
     public function __construct($request=null)
     {
         if (!isset($_SESSION['game'])) {

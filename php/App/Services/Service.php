@@ -2,6 +2,8 @@
 
 namespace Joc4enRatlla\Services;
 
+use Joc4enRatlla\Exceptions\NoViewException;
+
 class Service
 {
     public static function loadView($view, $data = [])
@@ -9,7 +11,12 @@ class Service
         $viewPath = str_replace('.', '/', $view);
         extract($data);
 
-        include  $_SERVER['DOCUMENT_ROOT'] . "/../Views/$viewPath.view.php";
+        $file =  $_SERVER['DOCUMENT_ROOT'] . "/../Views/$viewPath.view.php";
+
+        if (!file_exists($file)){
+            throw new NoViewException();
+        }
+        include $file;
 
     }
 }
