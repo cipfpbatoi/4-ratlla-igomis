@@ -3,7 +3,7 @@
      <tr>
        <?php if (!$winner ):
         for ($j=1;$j<= $board::COLUMNS ;$j++): ?>
-         <td><input type='submit' name='columna' value='<?=$j ?>' /></td>";
+         <td><input type='submit' name='columna' value='<?=$j ?>' /></td>
       <?php endfor;   else: ?>
         <h1>El guanyador es el jugador <?=  $winner ->getName() ?></h1>
       <?php endif ?>

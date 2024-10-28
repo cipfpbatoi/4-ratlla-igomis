@@ -7,13 +7,14 @@ $dbConfig =  require $_SERVER['DOCUMENT_ROOT'] . '/../config/connection.php';
 use Joc4enRatlla\Controllers\GameController;
 use Joc4enRatlla\Controllers\AuthController;
 use Joc4enRatlla\Models\User;
-use Joc4enRatlla\Services\Service;
+use Joc4enRatlla\Services\Connect;
 
-
-$db = Service::connect($dbConfig);
+$connection = new Connect($dbConfig);
 
 if (!isset($_SESSION['user_id'])) {
-    $user = new User($db);
+
+
+    $user = new User();
     $authController = new AuthController($user);
     $error = '';
     if ($_SERVER['REQUEST_METHOD'] === 'POST' ) {
@@ -27,10 +28,13 @@ if (!isset($_SESSION['user_id'])) {
         $error = "Nom d'usuari o contrasenya incorrectes.";
 
     }
-    loadView('login',compact('error');
-     } else {
-        loadView('jugador');
-    }
+    loadView('login',compact('error'));
+    exit();
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST' ) {
+    $gameController = new GameController($_POST);
+ } else {
+    loadView('jugador');
 }
 
 

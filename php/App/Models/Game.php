@@ -5,6 +5,7 @@ namespace Joc4enRatlla\Models;
 use Joc4enRatlla\Exceptions\IllegalMoveException;
 use Joc4enRatlla\Models\Board;
 use Joc4enRatlla\Models\Player;
+use Joc4enRatlla\Services\Connect;
 
 class Game
 {
@@ -120,12 +121,12 @@ class Game
                 $possibles[] = $col;
             }
         }
-        if (count($possibles)>2) {
-            $random = rand(-1,1);
+        if (count($possibles) ) {
+            $random = count($possibles) > 2 ? rand(-1, 1) : 0;
+            $middle = (int) ((count($possibles) + 0.9) / 2) + $random;
+            $inthemiddle = $possibles[$middle];
+            $this->play($inthemiddle);
         }
-        $middle = (int) (count($possibles) / 2)+$random;
-        $inthemiddle = $possibles[$middle];
-        $this->play($inthemiddle);
     }
 
 
@@ -138,48 +139,38 @@ class Game
         return unserialize($_SESSION['game'],[Game::class]);
     }
 
-    public function saveGame( $usuari_id)   {
+    public function saveGame( )   {
+        $db = Connect::restore()->getConnection();
         // Serialitzar el board
-        $graella = serialize($this->board);
-        $db = unserialize($_SESSION['db'],[PDO::class]);
+        $usuari_id = $_SESSION['user_id'];
+        $game  = $_SESSION['game'];
 
-        // Determinar l'estat de la partida
-        if ($this->winner !== null) {
-            $estat_partida = 'guanyada';
-        } else {
-            $estat_partida = 'en_curs';
-        }
 
         // Inserir la nova partida
-        $query = "INSERT INTO partides (usuari_id, graella, torn_actual, estat_partida) 
-                  VALUES (:usuari_id, :graella, :torn_actual, :estat_partida) 
+        $query = "INSERT INTO partides (usuari_id, game ) 
+                  VALUES (:usuari_id, :game   ) 
                   ON DUPLICATE KEY UPDATE 
-                  graella = :graella, torn_actual = :torn_actual, estat_partida = :estat_partida";
+                  game = :game   ";
 
         $stmt = $db->prepare($query);
         $stmt->bindParam(':usuari_id', $usuari_id);
-        $stmt->bindParam(':graella', $graella);
-        $stmt->bindParam(':torn_actual', $this->nextPlayer);
-        $stmt->bindParam(':estat_partida', $estat_partida);
+        $stmt->bindParam(':game', $game);
 
         return $stmt->execute();
     }
 
     // Recupera una partida des de la base de dades
-    public function getPartidaByUserId($usuari_id) {
+    public static function restoreGame ( ) {
+        $db = Connect::restore()->getConnection();
+        $usuari_id = $_SESSION['user_id'];
         $query = "SELECT * FROM partides WHERE usuari_id = :usuari_id";
-        $stmt = $this->db->prepare($query);
+        $stmt = $db->prepare($query);
         $stmt->bindParam(':usuari_id', $usuari_id);
         $stmt->execute();
         $partida = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if ($partida) {
-            $this->board  = unserialize($partida['graella'],Board::class);
-            $this->winner = null;
-            $this->nextPlayer = $partida['torn_actual'];
-        }
+        return unserialize($partida['game'],[Game::class]);
 
-        return $partida;
     }
 
 

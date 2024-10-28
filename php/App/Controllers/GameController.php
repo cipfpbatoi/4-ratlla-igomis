@@ -10,11 +10,13 @@ use Joc4enRatlla\Exceptions\IllegalMoveException;
 class GameController
 {
     private Game $game;
+    private $db;
 
 
 
     public function __construct($request=null,$db=null)
     {
+        $this->db = $db;
         if (!isset($_SESSION['game'])) {
             $jugador1 = new Player( $request['name'], $request['color']);
             $jugador2 = new Player( "Jugador 2", "pink", true);
@@ -43,7 +45,11 @@ class GameController
             exit();
         }
         if (isset($request['save'])) {
-            $this->game->saveGame($_SESSION['user_id']);
+            $this->game->saveGame( );
+        }
+        if (isset($request['restore'])) {
+            $this->game = Game::restoreGame( );
+            $this->game->save();
         }
         if (! $this->game->getBoard()->isFull()) {
             if (! $this->game->getWinner() && ! $this->game->getPlayer()->isAutomatic() && isset($request['columna'])) {

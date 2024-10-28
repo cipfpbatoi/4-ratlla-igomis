@@ -20,6 +20,7 @@
      <input type="submit" name="reset" value="Reiniciar joc">
      <input type="submit" name="exit" value="Sortir">
      <input type="submit" name="save" value="Guardar Partida">
+     <input type="submit" name="restore" value="Restaurar  Partida">
 </form>
  <?php include_once $_SERVER['DOCUMENT_ROOT'].'/../Views/partials/panel.view.php'  ?>
 

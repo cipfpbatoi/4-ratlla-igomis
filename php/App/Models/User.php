@@ -2,13 +2,14 @@
 
 namespace Joc4enRatlla\Models;
 
+use Joc4enRatlla\Services\Connect;
 use \PDO;
 class User
 {
     private $db;
 
-    public function __construct($dbConnection) {
-        $this->db = $dbConnection;
+    public function __construct( ) {
+        $this->db = Connect::restore()->getConnection();
     }
 
     public function findUserByUsername($nom_usuari) {
