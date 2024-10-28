@@ -5,6 +5,7 @@ namespace Joc4enRatlla\Models;
 use Joc4enRatlla\Exceptions\IllegalMoveException;
 use Joc4enRatlla\Models\Board;
 use Joc4enRatlla\Models\Player;
+use Joc4enRatlla\Services\Connect;
 
 class Game
 {
@@ -79,11 +80,11 @@ class Game
         }
         $coord = $this->board->setMovementOnBoard($columna,$this->nextPlayer);
 
-        if ($this->board->checkWin($coord)){
+         if ($this->board->checkWin($coord)){
             $this->winner = $this->players[$this->nextPlayer];
             $this->scores[$this->nextPlayer]++;
         } else {
-            $this->nextPlayer = ($this->nextPlayer == 1) ? 2 : 1;
+             $this->nextPlayer = ($this->nextPlayer == 1) ? 2 : 1;
         }
         $this->save();
     }
@@ -120,12 +121,12 @@ class Game
                 $possibles[] = $col;
             }
         }
-        if (count($possibles)>2) {
-            $random = rand(-1,1);
+        if (count($possibles) ) {
+            $random = count($possibles) > 2 ? rand(-1, 1) : 0;
+            $middle = (int) ((count($possibles) + 0.9) / 2) + $random;
+            $inthemiddle = $possibles[$middle];
+            $this->play($inthemiddle);
         }
-        $middle = (int) (count($possibles) / 2)+$random;
-        $inthemiddle = $possibles[$middle];
-        $this->play($inthemiddle);
     }
 
 
@@ -136,6 +137,40 @@ class Game
 
     public static function restore(){
         return unserialize($_SESSION['game'],[Game::class]);
+    }
+
+    public function saveGame( )   {
+        $db = Connect::restore()->getConnection();
+        // Serialitzar el board
+        $usuari_id = $_SESSION['user_id'];
+        $game  = $_SESSION['game'];
+
+
+        // Inserir la nova partida
+        $query = "INSERT INTO partides (usuari_id, game ) 
+                  VALUES (:usuari_id, :game   ) 
+                  ON DUPLICATE KEY UPDATE 
+                  game = :game   ";
+
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':usuari_id', $usuari_id);
+        $stmt->bindParam(':game', $game);
+
+        return $stmt->execute();
+    }
+
+    // Recupera una partida des de la base de dades
+    public static function restoreGame ( ) {
+        $db = Connect::restore()->getConnection();
+        $usuari_id = $_SESSION['user_id'];
+        $query = "SELECT * FROM partides WHERE usuari_id = :usuari_id";
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':usuari_id', $usuari_id);
+        $stmt->execute();
+        $partida = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return unserialize($partida['game'],[Game::class]);
+
     }
 
 

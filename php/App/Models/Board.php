@@ -97,5 +97,15 @@ class Board
         return $this->slots[1][$column] === 0;
     }
 
+    public function isFull(): bool
+    {
+        for ($i = 1; $i <= self::COLUMNS; $i++) {
+            if ($this->slots[1][$i] === 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
 }
